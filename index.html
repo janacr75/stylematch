@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3efe8">
+<meta name="description" content="Dein persönlicher digitaler Kleiderschrank und Outfit-Planer.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>StyleMatch</title>
+<style>
+:root{--cream:#f3efe8;--sand:#e5ddd1;--ink:#29251f;--muted:#786f64;--white:#fffdfa;--line:#ddd4c8}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:22px 20px 12px;display:flex;align-items:center;justify-content:space-between;max-width:720px;margin:auto}
+.brand{font-family:Georgia,serif;font-size:29px;letter-spacing:-1px}.tag{font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-top:2px}
+main{max-width:720px;margin:auto;padding:8px 18px 100px}
+.hero{background:var(--sand);border-radius:24px;padding:22px;margin:12px 0 22px}
+.eyebrow{font-size:10px;letter-spacing:1.6px;color:var(--muted);font-weight:700}
+h1{font:500 28px/1.15 Georgia,serif;margin:10px 0}h2{font:500 22px Georgia,serif;margin:22px 0 12px}
+p{color:var(--muted);line-height:1.5;font-size:14px}
+button,.button{border:0;border-radius:14px;padding:13px 16px;background:var(--ink);color:white;font-size:14px;font-weight:600;cursor:pointer}
+button.secondary{background:var(--white);color:var(--ink);border:1px solid var(--line)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat,.tile{background:var(--white);border-radius:17px;padding:15px}
+.stat strong{display:block;font:24px Georgia,serif}.stat span{font-size:12px;color:var(--muted)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#f8f5efed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:var(--muted);padding:9px 13px;flex:1;max-width:150px;font-size:11px}nav button.active{background:var(--sand);color:var(--ink)}
+.toolbar{display:flex;gap:7px;overflow:auto;padding-bottom:8px}.chip{white-space:nowrap;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:8px 12px;font-size:12px}.chip.active{background:var(--ink);color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item{background:var(--white);border-radius:16px;overflow:hidden}.item img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--sand)}.item .meta{padding:10px}.item b{font-size:13px}.item small{display:block;color:var(--muted);margin-top:3px}
+.empty{border:1px dashed #c9bfb2;border-radius:18px;padding:25px;text-align:center;color:var(--muted);grid-column:1/-1}
+.outfitbox{background:var(--sand);border-radius:22px;padding:18px}.pieces{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}.piece{background:var(--white);border-radius:14px;overflow:hidden}.piece img{width:100%;aspect-ratio:1;object-fit:cover}.piece div{padding:8px;font-size:12px}
+.field{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--ink);font:inherit;margin:6px 0 10px}
+.hidden{display:none!important}.notice{font-size:11px;color:var(--muted);margin-top:14px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">stylematch.</div><div class="tag">DEIN KLEIDERSCHRANK. DEIN STYLE.</div></div><span aria-hidden="true">✧</span></header>
+<main id="app">
+<section id="home">
+ <div class="hero"><div class="eyebrow">DEIN PERSÖNLICHER STYLE-ASSISTENT</div><h1>Dein Style. Jeden Tag neu.</h1><p>Entdecke neue Kombinationen aus den Kleidungsstücken, die du bereits besitzt.</p><div class="actions"><button onclick="show('wardrobe')">Kleiderschrank</button><button class="secondary" onclick="show('outfits')">Outfit finden</button></div></div>
+ <div class="stats"><div class="stat"><strong id="count">0</strong><span>Kleidungsstücke</span></div><div class="stat"><strong id="looks">0</strong><span>gespeicherte Looks</span></div></div>
+ <h2>Deine Garderobe</h2><p>Fotografiere ein Kleidungsstück oder wähle ein Bild aus deiner Galerie.</p><button onclick="document.getElementById('photo').click()">＋ Kleidung hinzufügen</button>
+ <p class="notice">Deine Fotos werden nur in diesem Browser auf deinem Gerät gespeichert.</p>
+</section>
+<section id="wardrobe" class="hidden">
+ <h1>Mein Kleiderschrank</h1><p id="wardrobeCount">Deine Kleidung auf einen Blick.</p>
+ <div class="toolbar" id="filters"></div><div class="grid" id="items"></div>
+ <h2>Neues Teil hinzufügen</h2>
+ <label class="eyebrow" for="photo">FOTO AUFNEHMEN ODER AUSWÄHLEN</label>
+ <input id="photo" class="field" type="file" accept="image/*" capture="environment">
+ <input id="name" class="field" placeholder="Name, z. B. Weißes T-Shirt">
+ <select id="category" class="field"><option>Oberteile</option><option>Hosen</option><option>Jacken</option><option>Schuhe</option><option>Kleider</option><option>Accessoires</option><option>Sonstiges</option></select>
+ <button onclick="addGarment()">Im Kleiderschrank speichern</button>
+</section>
+<section id="outfits" class="hidden">
+ <h1>Outfit entdecken</h1><p>StyleMatch stellt Vorschläge aus deinen gespeicherten Teilen zusammen.</p>
+ <div class="outfitbox"><div class="eyebrow">DEIN LOOK</div><h2 id="outfitTitle">Dein persönlicher Mix</h2><div id="outfitPieces" class="pieces"></div><p id="outfitNote">Füge Kleidung aus verschiedenen Kategorien hinzu, um Kombinationen zu entdecken.</p><button onclick="makeOutfit()">Neue Kombination</button> <button class="secondary" onclick="saveLook()">♡ Look merken</button></div>
+</section>
+<section id="favorites" class="hidden"><h1>Meine Favoriten</h1><div id="favoriteList" class="grid"></div></section>
+</main>
+<nav>
+<button class="active" data-tab="home" onclick="show('home')">⌂<br>Start</button>
+<button data-tab="wardrobe" onclick="show('wardrobe')">♧<br>Schrank</button>
+<button data-tab="outfits" onclick="show('outfits')">✧<br>Outfits</button>
+<button data-tab="favorites" onclick="show('favorites')">♡<br>Favoriten</button>
+</nav>
+<script>
+const KEY='stylematch_items_v1', FKEY='stylematch_favs_v1';
+let garments=JSON.parse(localStorage.getItem(KEY)||'[]'), favorites=JSON.parse(localStorage.getItem(FKEY)||'[]'), filter='Alle', currentLook=[];
+const cats=['Alle','Oberteile','Hosen','Jacken','Schuhe','Kleider','Accessoires','Sonstiges'];
+function persist(){localStorage.setItem(KEY,JSON.stringify(garments));localStorage.setItem(FKEY,JSON.stringify(favorites));render()}
+function show(tab){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(tab).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));render();if(tab==='outfits')makeOutfit()}
+function render(){
+ document.getElementById('count').textContent=garments.length;document.getElementById('looks').textContent=favorites.length;document.getElementById('wardrobeCount').textContent=garments.length+' gespeicherte Kleidungsstücke';
+ const filters=document.getElementById('filters');filters.innerHTML='';cats.forEach(c=>{let b=document.createElement('button');b.className='chip '+(filter===c?'active':'');b.textContent=c;b.onclick=()=>{filter=c;render()};filters.append(b)});
+ const list=document.getElementById('items');list.innerHTML='';let visible=garments.filter(g=>filter==='Alle'||g.category===filter);
+ if(!visible.length)list.innerHTML='<div class="empty">Hier ist noch Platz für deine Kleidung. Füge dein erstes Teil hinzu.</div>';
+ visible.forEach(g=>{let d=document.createElement('article');d.className='item';d.innerHTML=`<img src="${g.data}" alt=""><div class="meta"><b></b><small></small></div>`;d.querySelector('b').textContent=g.name;d.querySelector('small').textContent=g.category;list.append(d)});
+ const fav=document.getElementById('favoriteList');fav.innerHTML='';favorites.forEach((look,i)=>{let d=document.createElement('div');d.className='tile';d.textContent='Outfit '+(i+1)+' · '+look.map(x=>x.name).join(', ');fav.append(d)});
+}
+function addGarment(){let file=document.getElementById('photo').files[0];if(!file){alert('Bitte wähle zuerst ein Kleidungsfoto aus.');return}let reader=new FileReader();reader.onload=()=>{garments.unshift({id:Date.now(),name:document.getElementById('name').value.trim()||'Mein Kleidungsstück',category:document.getElementById('category').value,data:reader.result});document.getElementById('photo').value='';document.getElementById('name').value='';persist();alert('Gespeichert! Dein Kleidungsstück ist jetzt im Schrank.')};reader.readAsDataURL(file)}
+function makeOutfit(){let groups=['Oberteile','Hosen','Jacken','Schuhe'];currentLook=groups.map(c=>garments.filter(g=>g.category===c)).filter(a=>a.length).map(a=>a[Math.floor(Math.random()*a.length)]);let wrap=document.getElementById('outfitPieces');wrap.innerHTML='';currentLook.forEach(g=>{let d=document.createElement('div');d.className='piece';d.innerHTML='<img alt=""><div></div>';d.querySelector('img').src=g.data;d.querySelector('div').textContent=g.name;wrap.append(d)});document.getElementById('outfitTitle').textContent=currentLook.length?'Look aus deinem Kleiderschrank':'Noch nicht genug Kleidungsstücke';document.getElementById('outfitNote').textContent=currentLook.length?'Diese Teile wurden aus deiner Garderobe ausgewählt.':'Füge am besten Oberteile, Hosen, Jacken und Schuhe hinzu. Die Kombinationen sind zunächst einfache Zufallsvorschläge.'}
+function saveLook(){if(!currentLook.length){alert('Füge zuerst Kleidungsstücke hinzu.');return}favorites.unshift(currentLook);persist();alert('Outfit in deinen Favoriten gespeichert.')}
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
